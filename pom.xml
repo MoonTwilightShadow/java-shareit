@@ -60,6 +60,14 @@
 			<artifactId>modelmapper</artifactId>
 			<version>3.1.1</version>
 		</dependency>
+
+
+			<dependency>
+				<groupId>com.puppycrawl.tools</groupId>
+				<artifactId>checkstyle</artifactId>
+				<version>10.3</version>
+			</dependency>
+
 	</dependencies>
 
 	<build>
@@ -112,13 +120,7 @@
 							<phase>compile</phase>
 						</execution>
 					</executions>
-					<dependencies>
-						<dependency>
-							<groupId>com.puppycrawl.tools</groupId>
-							<artifactId>checkstyle</artifactId>
-							<version>10.3</version>
-						</dependency>
-					</dependencies>
+
 				</plugin>
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
