@@ -1,21 +1,19 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item {
+public class UpdateItemRequest {
     private Integer id;
+    @NotBlank
     private String name;
+    @NotBlank
     private String description;
-    private boolean available;
+    private Boolean available;
     private Integer owner;
-    private String request;
 }
