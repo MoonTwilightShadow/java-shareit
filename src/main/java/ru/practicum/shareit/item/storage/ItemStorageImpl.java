@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,7 +22,7 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public List<Item> getByOwner(Integer owner) {
         return items.values().stream()
-                .filter(item -> item.getOwner() == owner)
+                .filter(item -> Objects.equals(item.getOwner(), owner))
                 .collect(Collectors.toList());
     }
 
@@ -48,7 +49,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public void delete(Item item) {
-        items.remove(item);
+    public void delete(Integer id) {
+        items.remove(id);
     }
 }

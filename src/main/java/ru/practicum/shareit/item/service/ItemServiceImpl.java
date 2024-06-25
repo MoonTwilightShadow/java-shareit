@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -67,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
 
         Item saveItem = itemStorage.getById(request.getId());
 
-        if (saveItem.getOwner() != request.getOwner())
+        if (!Objects.equals(saveItem.getOwner(), request.getOwner()))
             throw new OwnerExeption();
 
         if (request.getName() != null) {
@@ -88,5 +89,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void delete(Integer id) {
         log.info("delete item method");
+
+        itemStorage.delete(id);
     }
 }
