@@ -35,14 +35,17 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> getByOwner(Integer owner) {
         log.info("getByOwner item method");
 
-        if (userStorage.getById(owner) == null)
+        if (userStorage.getById(owner) == null) {
             throw new NotOwnerException();
+        }
 
         return itemStorage.getByOwner(owner);
     }
 
     @Override
     public List<Item> search(String text) {
+        log.info("search item method");
+
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
@@ -56,8 +59,9 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = modelMapper.map(request, Item.class);
 
-        if (userStorage.getById(item.getOwner()) == null)
+        if (userStorage.getById(item.getOwner()) == null) {
             throw new NotOwnerException();
+        }
 
         return itemStorage.create(item);
     }
@@ -68,8 +72,9 @@ public class ItemServiceImpl implements ItemService {
 
         Item saveItem = itemStorage.getById(request.getId());
 
-        if (!Objects.equals(saveItem.getOwner(), request.getOwner()))
+        if (!Objects.equals(saveItem.getOwner(), request.getOwner())) {
             throw new OwnerExeption();
+        }
 
         if (request.getName() != null) {
             saveItem.setName(request.getName());

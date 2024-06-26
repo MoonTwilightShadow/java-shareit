@@ -24,8 +24,9 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User create(User user) {
-        if (uniqEmail.contains(user.getEmail()))
+        if (uniqEmail.contains(user.getEmail())) {
             throw new EmailAlreadyExistException("Такой email уже зарегистрирован");
+        }
 
         uniqEmail.add(user.getEmail());
 
@@ -36,8 +37,9 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User update(User user) {
-        if (uniqEmail.contains(user.getEmail()))
+        if (uniqEmail.contains(user.getEmail())) {
             throw new EmailAlreadyExistException("Такой email уже зарегистрирован");
+        }
 
         User saveUser = users.get(user.getId());
 
@@ -45,7 +47,6 @@ public class UserStorageImpl implements UserStorage {
             uniqEmail.remove(saveUser.getEmail());
             saveUser.setEmail(user.getEmail());
         }
-
 
         if (user.getName() != null)
             saveUser.setName(user.getName());

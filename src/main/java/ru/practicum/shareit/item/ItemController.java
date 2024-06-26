@@ -17,7 +17,8 @@ import java.util.List;
 @RequestMapping("/items")
 @AllArgsConstructor
 public class ItemController {
-    ItemService itemService;
+    private final ItemService itemService;
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
     public Item getById(@PathVariable Integer itemId) {
@@ -25,7 +26,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<Item> getByOwner(@RequestHeader("X-Sharer-User-Id") Integer owner) {
+    public List<Item> getByOwner(@RequestHeader(userIdHeader) Integer owner) {
         return itemService.getByOwner(owner);
     }
 
@@ -35,13 +36,13 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader("X-Sharer-User-Id") Integer owner) {
+    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(userIdHeader) Integer owner) {
         request.setOwner(owner);
         return itemService.create(request);
     }
 
     @PatchMapping("/{itemId}")
-    public Item update(@RequestBody UpdateItemRequest request, @PathVariable Integer itemId, @RequestHeader("X-Sharer-User-Id") Integer owner) {
+    public Item update(@RequestBody UpdateItemRequest request, @PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer owner) {
         request.setId(itemId);
         request.setOwner(owner);
         return itemService.update(request);
