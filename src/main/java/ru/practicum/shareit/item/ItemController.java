@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final String userIdHeader = "X-Sharer-User-Id";
+    private static final String userIdHeader = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
     public Item getById(@PathVariable Integer itemId) {

@@ -4,42 +4,50 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.exception.exceptions.NotOwnerException;
 import ru.practicum.shareit.exception.exceptions.OwnerExeption;
 import ru.practicum.shareit.item.dto.CreateItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
     private final ModelMapper modelMapper;
-    private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Item getById(Integer id) {
         log.info("getById item method");
 
-        return itemStorage.getById(id);
+        Optional<Item> item = itemRepository.findById(id);
+
+        if (item.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        return item.get();
     }
 
     @Override
     public List<Item> getByOwner(Integer owner) {
         log.info("getByOwner item method");
 
-        if (userStorage.getById(owner) == null) {
+        if (userRepository.findById(owner).isEmpty()) {
             throw new NotOwnerException();
         }
 
-        return itemStorage.getByOwner(owner);
+        return itemRepository.findItemsByOwner(owner);
     }
 
     @Override
@@ -50,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemStorage.search(text.toLowerCase());
+        return itemRepository.findItemsByNameOrDescriptionContainsIgnoreCaseAndAvailableTrue(text, text);
     }
 
     @Override
@@ -59,42 +67,46 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = modelMapper.map(request, Item.class);
 
-        if (userStorage.getById(item.getOwner()) == null) {
+        if (userRepository.findById(item.getOwner()).isEmpty()) {
             throw new NotOwnerException();
         }
 
-        return itemStorage.create(item);
+        return itemRepository.save(item);
     }
 
     @Override
     public Item update(UpdateItemRequest request) {
         log.info("update item method");
 
-        Item saveItem = itemStorage.getById(request.getId());
+        Optional<Item> item = itemRepository.findById(request.getId());
 
-        if (!Objects.equals(saveItem.getOwner(), request.getOwner())) {
+        if (item.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        if (!Objects.equals(item.get().getOwner(), request.getOwner())) {
             throw new OwnerExeption();
         }
 
         if (request.getName() != null) {
-            saveItem.setName(request.getName());
+            item.get().setName(request.getName());
         }
 
         if (request.getDescription() != null) {
-            saveItem.setDescription(request.getDescription());
+            item.get().setDescription(request.getDescription());
         }
 
         if (request.getAvailable() != null) {
-            saveItem.setAvailable(request.getAvailable());
+            item.get().setAvailable(request.getAvailable());
         }
 
-        return itemStorage.update(saveItem);
+        return itemRepository.save(item.get());
     }
 
     @Override
     public void delete(Integer id) {
         log.info("delete item method");
 
-        itemStorage.delete(id);
+        itemRepository.deleteById(id);
     }
 }

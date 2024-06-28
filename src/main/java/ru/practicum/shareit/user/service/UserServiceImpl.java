@@ -9,7 +9,7 @@ import ru.practicum.shareit.exception.exceptions.EmptyEmailExeption;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserRequest;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
