@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.dto.CreateItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -62,15 +63,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item create(CreateItemRequest request) {
+    public Item create(CreateItemRequest request, Integer ownerId) {
         log.info("create item method");
 
         Item item = modelMapper.map(request, Item.class);
-
-        if (userRepository.findById(item.getOwner()).isEmpty()) {
+        Optional<User> user = userRepository.findById(ownerId);
+        if (user.isEmpty()) {
             throw new NotOwnerException();
         }
 
+        item.setOwner(user.get());
         return itemRepository.save(item);
     }
 

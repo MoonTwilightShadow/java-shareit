@@ -50,9 +50,6 @@ public class UserServiceImpl implements UserService {
             throw new EmptyEmailExeption("Email не может быть пустым");
         }
 
-        if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
-            throw new EmailAlreadyExistException("Такой email уже зарегистрирован");
-        }
         return userRepository.save(user);
     }
 
@@ -66,13 +63,8 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException();
         }
 
-        String email = request.getEmail();
-        if (email != null && !email.equals(user.get().getEmail())) {
-            if (userRepository.findUserByEmail(email).isEmpty()) {
-                user.get().setEmail(email);
-            } else {
-                throw new EmailAlreadyExistException("Такой email уже зарегистрирован");
-            }
+        if (request.getEmail() != null) {
+                user.get().setEmail(request.getEmail());
         }
 
         if (request.getName() != null) {

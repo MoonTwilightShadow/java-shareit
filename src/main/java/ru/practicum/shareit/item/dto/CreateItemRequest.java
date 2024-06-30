@@ -19,5 +19,4 @@ public class CreateItemRequest {
     private String description;
     @NotNull
     private Boolean available;
-    private Integer owner;
 }

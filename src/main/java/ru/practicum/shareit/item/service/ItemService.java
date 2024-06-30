@@ -13,7 +13,7 @@ public interface ItemService {
 
     List<Item> search(String text);
 
-    Item create(CreateItemRequest request);
+    Item create(CreateItemRequest request, Integer ownerId);
 
     Item update(UpdateItemRequest request);
 

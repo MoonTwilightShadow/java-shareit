@@ -36,9 +36,8 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(userIdHeader) Integer owner) {
-        request.setOwner(owner);
-        return itemService.create(request);
+    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(userIdHeader) Integer ownerId) {
+        return itemService.create(request, ownerId);
     }
 
     @PatchMapping("/{itemId}")
