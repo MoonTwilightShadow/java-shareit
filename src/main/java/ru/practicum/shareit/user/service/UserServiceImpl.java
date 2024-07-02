@@ -2,14 +2,13 @@ package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.exceptions.EmailAlreadyExistException;
 import ru.practicum.shareit.exception.exceptions.EmptyEmailExeption;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.utils.UserMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,6 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
     @Override
@@ -44,7 +42,7 @@ public class UserServiceImpl implements UserService {
     public User create(UserRequest request) {
         log.info("create user method");
 
-        User user = modelMapper.map(request, User.class);
+        User user = UserMapper.mapFromRequest(request);
 
         if (user.getEmail() == null) {
             throw new EmptyEmailExeption("Email не может быть пустым");

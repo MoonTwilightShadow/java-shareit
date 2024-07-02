@@ -6,7 +6,8 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    List<Item> findItemsByOwner(Integer owner);
+
+    List<Item> findItemsByOwnerIdOrderByIdAsc(Integer ownerId);
 
     List<Item> findItemsByNameOrDescriptionContainsIgnoreCaseAndAvailableTrue(String name, String description);
 }

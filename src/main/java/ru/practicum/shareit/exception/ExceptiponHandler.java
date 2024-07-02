@@ -24,6 +24,18 @@ public class ExceptiponHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse availableHandle(final IllegalArgumentException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse stateHandle(final StatusException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse ownerHandle(final OwnerExeption e) {
         return new ErrorResponse(e.getMessage());
@@ -34,8 +46,6 @@ public class ExceptiponHandler {
     public ErrorResponse notOwnerHandle(final NotOwnerException e) {
         return new ErrorResponse(e.getMessage());
     }
-
-
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
