@@ -41,6 +41,7 @@ public class ItemMapper {
                 item.getAvailable(),
                 item.getOwner().getId(),
                 null,
+                null,
                 null
         );
     }

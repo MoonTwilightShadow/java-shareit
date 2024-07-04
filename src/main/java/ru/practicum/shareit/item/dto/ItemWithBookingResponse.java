@@ -1,9 +1,12 @@
 package ru.practicum.shareit.item.dto;
 
+import jdk.dynalink.linker.LinkerServices;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingShortResponse;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,4 +19,5 @@ public class ItemWithBookingResponse {
     private Integer ownerId;
     private BookingShortResponse lastBooking;
     private BookingShortResponse nextBooking;
+    private List<CommentResponse> comments;
 }

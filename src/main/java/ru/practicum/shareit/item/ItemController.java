@@ -50,7 +50,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentResponse comment(@PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer userId, @RequestBody String text) {
-        return itemService.comment(itemId, userId, text);
+    public CommentResponse comment(@PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer userId, @RequestBody CommentRequest comment) {
+        return itemService.comment(itemId, userId, comment);
     }
 }

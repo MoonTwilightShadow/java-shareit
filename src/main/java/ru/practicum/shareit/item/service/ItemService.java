@@ -18,5 +18,5 @@ public interface ItemService {
 
     void delete(Integer id);
 
-    CommentResponse comment(Integer itemId, Integer userId, String text);
+    CommentResponse comment(Integer itemId, Integer userId, CommentRequest comment);
 }

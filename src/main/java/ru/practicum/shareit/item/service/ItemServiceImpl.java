@@ -46,12 +46,16 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime current = LocalDateTime.now();
 
         if (item.getOwnerId().equals(userId)) {
-            Optional<Booking> last = bookingRepository.findFirstByStartLessThanEqualAndStatusEqualsAndItemIdOrderByEndDesc(current, Status.APPROVED, item.getId());
-            Optional<Booking> next = bookingRepository.findFirstByStartAfterAndStatusEqualsAndItemIdOrderByStart(current, Status.APPROVED, item.getId());
+            Optional<Booking> last = bookingRepository.findFirstByStartLessThanEqualAndStatusEqualsAndItemIdOrderByEndDesc(current, Status.APPROVED, id);
+            Optional<Booking> next = bookingRepository.findFirstByStartAfterAndStatusEqualsAndItemIdOrderByStart(current, Status.APPROVED, id);
 
             last.ifPresent(booking -> item.setLastBooking(BookingMapper.mapToShortResponse(booking)));
             next.ifPresent(booking -> item.setNextBooking(BookingMapper.mapToShortResponse(booking)));
         }
+
+        item.setComments(commentRepository.findCommentsByItemId(id).stream()
+                .map(ItemMapper::mapToCommentResponse)
+                .collect(Collectors.toList()));
 
         return item;
     }
@@ -76,6 +80,10 @@ public class ItemServiceImpl implements ItemService {
 
             last.ifPresent(booking -> item.setLastBooking(BookingMapper.mapToShortResponse(booking)));
             next.ifPresent(booking -> item.setNextBooking(BookingMapper.mapToShortResponse(booking)));
+
+            item.setComments(commentRepository.findCommentsByItemId(item.getId()).stream()
+                    .map(ItemMapper::mapToCommentResponse)
+                    .collect(Collectors.toList()));
         }
 
         return items;
@@ -159,14 +167,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentResponse comment(Integer itemId, Integer userId, String text) {
+    public CommentResponse comment(Integer itemId, Integer userId, CommentRequest comment) {
         Item item = itemRepository.findById(itemId).orElseThrow(NotFoundException::new);
         User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
 
-        if (bookingRepository.findBookingByItemAndBooker(item, user).isEmpty()) {
+        if (bookingRepository.findCompletedBooking(itemId, userId).isEmpty() || comment.getText().isBlank()) {
             throw new IllegalArgumentException();
         }
 
-        return ItemMapper.mapToCommentResponse(commentRepository.save(new Comment(text, item, user)));
+        Comment newComment = new Comment();
+        newComment.setItem(item);
+        newComment.setAuthor(user);
+        newComment.setText(comment.getText());
+        newComment.setCreated(LocalDateTime.now());
+        return ItemMapper.mapToCommentResponse(commentRepository.save(newComment));
     }
 }

@@ -96,7 +96,7 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "ALL" -> bookings = bookingRepository.findBookingsByBooker_IdOrderByStartDesc(bookerId);
             case "CURRENT" ->
-                    bookings = bookingRepository.findBookingsByBooker_IdAndEndAfterOrderByStartDesc(bookerId, current);
+                    bookings = bookingRepository.findBookingsByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, current, current);
             case "PAST" ->
                     bookings = bookingRepository.findBookingsByBooker_IdAndEndBeforeOrderByStartDesc(bookerId, current);
             case "FUTURE" ->
@@ -125,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "ALL" -> bookings = bookingRepository.findBookingsByItemOwnerIdOrderByStartDesc(ownerId);
             case "CURRENT" ->
-                    bookings = bookingRepository.findBookingsByItemOwnerIdAndEndAfterOrderByStartDesc(ownerId, current);
+                    bookings = bookingRepository.findBookingsByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId, current, current);
             case "PAST" ->
                     bookings = bookingRepository.findBookingsByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, current);
             case "FUTURE" ->
