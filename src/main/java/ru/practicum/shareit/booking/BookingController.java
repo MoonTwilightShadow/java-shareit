@@ -17,30 +17,30 @@ import java.util.List;
 @AllArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
-    private static final String userIdHeader = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public BookingResponse create(@Valid @RequestBody BookingRequest request, @RequestHeader(userIdHeader) Integer bookerId) {
+    public BookingResponse create(@Valid @RequestBody BookingRequest request, @RequestHeader(USER_ID_HEADER) Integer bookerId) {
         return bookingService.create(request, bookerId);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponse approve(@RequestHeader(userIdHeader) Integer ownerId, @PathVariable Integer bookingId, @RequestParam(value = "approved") Boolean approved) {
+    public BookingResponse approve(@RequestHeader(USER_ID_HEADER) Integer ownerId, @PathVariable Integer bookingId, @RequestParam(value = "approved") Boolean approved) {
         return bookingService.approve(ownerId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
-    public BookingResponse getById(@PathVariable Integer bookingId, @RequestHeader(userIdHeader) Integer userId) {
+    public BookingResponse getById(@PathVariable Integer bookingId, @RequestHeader(USER_ID_HEADER) Integer userId) {
         return bookingService.getById(bookingId, userId);
     }
 
     @GetMapping
-    public List<BookingResponse> getAllByBooker(@RequestHeader(userIdHeader) Integer bookerId, @Valid @RequestParam(value = "state", defaultValue = "ALL") String state) {
+    public List<BookingResponse> getAllByBooker(@RequestHeader(USER_ID_HEADER) Integer bookerId, @Valid @RequestParam(value = "state", defaultValue = "ALL") String state) {
         return bookingService.getAllByBooker(bookerId, state);
     }
 
     @GetMapping("/owner")
-    public List<BookingResponse> getAllByOwner(@RequestHeader(userIdHeader) Integer ownerId, @Valid @RequestParam(value = "state", defaultValue = "ALL") String state) {
+    public List<BookingResponse> getAllByOwner(@RequestHeader(USER_ID_HEADER) Integer ownerId, @Valid @RequestParam(value = "state", defaultValue = "ALL") String state) {
         return bookingService.getAllByOwner(ownerId, state);
     }
 }

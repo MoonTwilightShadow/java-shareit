@@ -17,15 +17,15 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private static final String userIdHeader = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
-    public ItemWithBookingResponse getById(@PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer userId) {
+    public ItemWithBookingResponse getById(@PathVariable Integer itemId, @RequestHeader(USER_ID_HEADER) Integer userId) {
         return itemService.getById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemWithBookingResponse> getByOwner(@RequestHeader(userIdHeader) Integer owner) {
+    public List<ItemWithBookingResponse> getByOwner(@RequestHeader(USER_ID_HEADER) Integer owner) {
         return itemService.getByOwner(owner);
     }
 
@@ -35,12 +35,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(userIdHeader) Integer ownerId) {
+    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(USER_ID_HEADER) Integer ownerId) {
         return itemService.create(request, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemResponse update(@RequestBody UpdateItemRequest request, @PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer ownerId) {
+    public ItemResponse update(@RequestBody UpdateItemRequest request, @PathVariable Integer itemId, @RequestHeader(USER_ID_HEADER) Integer ownerId) {
         return itemService.update(request, itemId, ownerId);
     }
 
@@ -50,7 +50,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentResponse comment(@PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer userId, @RequestBody CommentRequest comment) {
+    public CommentResponse comment(@PathVariable Integer itemId, @RequestHeader(USER_ID_HEADER) Integer userId, @RequestBody CommentRequest comment) {
         return itemService.comment(itemId, userId, comment);
     }
 }

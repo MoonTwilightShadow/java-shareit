@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BookingRequest {
     @NotNull
-    Integer itemId;
+    private Integer itemId;
     @NotNull
     @FutureOrPresent
-    LocalDateTime start;
+    private LocalDateTime start;
     @NotNull
     @FutureOrPresent
-    LocalDateTime end;
+    private LocalDateTime end;
 }
