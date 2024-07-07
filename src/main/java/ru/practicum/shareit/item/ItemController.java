@@ -2,8 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CreateItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -18,38 +17,40 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final String userIdHeader = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
-    public Item getById(@PathVariable Integer itemId) {
-        return itemService.getById(itemId);
+    public ItemWithBookingResponse getById(@PathVariable Integer itemId, @RequestHeader(USER_ID_HEADER) Integer userId) {
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping
-    public List<Item> getByOwner(@RequestHeader(userIdHeader) Integer owner) {
+    public List<ItemWithBookingResponse> getByOwner(@RequestHeader(USER_ID_HEADER) Integer owner) {
         return itemService.getByOwner(owner);
     }
 
     @GetMapping("/search")
-    public List<Item> search(@RequestParam("text") String text) {
+    public List<ItemResponse> search(@RequestParam("text") String text) {
         return itemService.search(text);
     }
 
     @PostMapping
-    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(userIdHeader) Integer owner) {
-        request.setOwner(owner);
-        return itemService.create(request);
+    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(USER_ID_HEADER) Integer ownerId) {
+        return itemService.create(request, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public Item update(@RequestBody UpdateItemRequest request, @PathVariable Integer itemId, @RequestHeader(userIdHeader) Integer owner) {
-        request.setId(itemId);
-        request.setOwner(owner);
-        return itemService.update(request);
+    public ItemResponse update(@RequestBody UpdateItemRequest request, @PathVariable Integer itemId, @RequestHeader(USER_ID_HEADER) Integer ownerId) {
+        return itemService.update(request, itemId, ownerId);
     }
 
     @DeleteMapping("/{itemId}")
     public void delete(@PathVariable Integer itemId) {
         itemService.delete(itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentResponse comment(@PathVariable Integer itemId, @RequestHeader(USER_ID_HEADER) Integer userId, @RequestBody CommentRequest comment) {
+        return itemService.comment(itemId, userId, comment);
     }
 }
