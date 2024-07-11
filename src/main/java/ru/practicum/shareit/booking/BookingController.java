@@ -35,12 +35,18 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingResponse> getAllByBooker(@RequestHeader(USER_ID_HEADER) Integer bookerId, @Valid @RequestParam(value = "state", defaultValue = "ALL") String state) {
-        return bookingService.getAllByBooker(bookerId, state);
+    public List<BookingResponse> getAllByBooker(@RequestHeader(USER_ID_HEADER) Integer bookerId,
+                                                @Valid @RequestParam(value = "state", defaultValue = "ALL") String state,
+                                                @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return bookingService.getAllByBooker(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public List<BookingResponse> getAllByOwner(@RequestHeader(USER_ID_HEADER) Integer ownerId, @Valid @RequestParam(value = "state", defaultValue = "ALL") String state) {
-        return bookingService.getAllByOwner(ownerId, state);
+    public List<BookingResponse> getAllByOwner(@RequestHeader(USER_ID_HEADER) Integer ownerId,
+                                               @Valid @RequestParam(value = "state", defaultValue = "ALL") String state,
+                                               @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                               @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return bookingService.getAllByOwner(ownerId, state, from, size);
     }
 }
