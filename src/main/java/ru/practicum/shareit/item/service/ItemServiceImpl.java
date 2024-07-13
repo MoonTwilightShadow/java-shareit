@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -61,16 +62,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemWithBookingResponse> getByOwner(Integer owner) {
+    public List<ItemWithBookingResponse> getByOwner(Integer owner, Integer from, Integer size) {
         log.info("getByOwner item method");
 
         if (userRepository.findById(owner).isEmpty()) {
             throw new NotOwnerException();
         }
 
-        List<ItemWithBookingResponse> items = itemRepository.findItemsByOwnerIdOrderByIdAsc(owner).stream()
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        PageRequest page = PageRequest.of(from / size, size);
+        List<ItemWithBookingResponse> items = itemRepository.findItemsByOwnerIdOrderByIdAsc(owner, page).stream()
                 .map(ItemMapper::mapToBookingResponse)
-                .toList();
+                .collect(Collectors.toList());
 
         LocalDateTime current = LocalDateTime.now();
 
@@ -90,29 +96,31 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponse> search(String text) {
+    public List<ItemResponse> search(String text, Integer from, Integer size) {
         log.info("search item method");
 
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
 
-        return itemRepository.findItemsByNameOrDescriptionContainsIgnoreCaseAndAvailableTrue(text, text).stream()
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        PageRequest page = PageRequest.of(from / size, size);
+        return itemRepository.findItemsByNameOrDescriptionContainsIgnoreCaseAndAvailableTrue(text, text, page).stream()
                 .map(ItemMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Item create(CreateItemRequest request, Integer ownerId) {
+    public ItemResponse create(CreateItemRequest request, Integer ownerId) {
         log.info("create item method");
 
         Item item = ItemMapper.mapFromRequest(request);
 
-        Optional<User> user = userRepository.findById(ownerId);
-        if (user.isEmpty()) {
-            throw new NotOwnerException();
-        }
-        item.setOwner(user.get());
+        User user = userRepository.findById(ownerId).orElseThrow(NotOwnerException::new);
+        item.setOwner(user);
 
         Integer requestId = request.getRequestId();
         if (requestId != null) {
@@ -126,7 +134,7 @@ public class ItemServiceImpl implements ItemService {
         } else {
             item.setRequest(null);
         }
-        return itemRepository.save(item);
+        return ItemMapper.mapToResponse(itemRepository.save(item));
     }
 
 
@@ -134,29 +142,25 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse update(UpdateItemRequest request, Integer itemId, Integer ownerId) {
         log.info("update item method");
 
-        Optional<Item> item = itemRepository.findById(itemId);
+        Item item = itemRepository.findById(itemId).orElseThrow(NotFoundException::new);
 
-        if (item.isEmpty()) {
-            throw new NotFoundException();
-        }
-
-        if (!Objects.equals(item.get().getOwner().getId(), ownerId)) {
+        if (!Objects.equals(item.getOwner().getId(), ownerId)) {
             throw new OwnerExeption();
         }
 
         if (request.getName() != null) {
-            item.get().setName(request.getName());
+            item.setName(request.getName());
         }
 
         if (request.getDescription() != null) {
-            item.get().setDescription(request.getDescription());
+            item.setDescription(request.getDescription());
         }
 
         if (request.getAvailable() != null) {
-            item.get().setAvailable(request.getAvailable());
+            item.setAvailable(request.getAvailable());
         }
 
-        return ItemMapper.mapToResponse(itemRepository.save(item.get()));
+        return ItemMapper.mapToResponse(itemRepository.save(item));
     }
 
     @Override

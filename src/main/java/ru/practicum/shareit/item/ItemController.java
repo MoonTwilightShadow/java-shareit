@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -25,17 +24,21 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemWithBookingResponse> getByOwner(@RequestHeader(USER_ID_HEADER) Integer owner) {
-        return itemService.getByOwner(owner);
+    public List<ItemWithBookingResponse> getByOwner(@RequestHeader(USER_ID_HEADER) Integer owner,
+                                                    @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return itemService.getByOwner(owner, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemResponse> search(@RequestParam("text") String text) {
-        return itemService.search(text);
+    public List<ItemResponse> search(@RequestParam("text") String text,
+                                     @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return itemService.search(text, from, size);
     }
 
     @PostMapping
-    public Item create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(USER_ID_HEADER) Integer ownerId) {
+    public ItemResponse create(@Valid @RequestBody CreateItemRequest request, @RequestHeader(USER_ID_HEADER) Integer ownerId) {
         return itemService.create(request, ownerId);
     }
 

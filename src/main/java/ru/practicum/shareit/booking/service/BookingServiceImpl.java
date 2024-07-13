@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
@@ -85,27 +87,40 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponse> getAllByBooker(Integer bookerId, String state) {
+    public List<BookingResponse> getAllByBooker(Integer bookerId, String state, Integer from, Integer size) {
         if (userRepository.findById(bookerId).isEmpty()) {
             throw new NotFoundException();
         }
 
-        List<Booking> bookings;
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        PageRequest page = PageRequest.of(from / size, size);
+        Page<Booking> bookings;
         LocalDateTime current = LocalDateTime.now();
 
         switch (state) {
-            case "ALL" -> bookings = bookingRepository.findBookingsByBooker_IdOrderByStartDesc(bookerId);
-            case "CURRENT" ->
-                    bookings = bookingRepository.findBookingsByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, current, current);
-            case "PAST" ->
-                    bookings = bookingRepository.findBookingsByBooker_IdAndEndBeforeOrderByStartDesc(bookerId, current);
-            case "FUTURE" ->
-                    bookings = bookingRepository.findBookingsByBooker_IdAndStartAfterOrderByStartDesc(bookerId, current);
-            case "WAITING" ->
-                    bookings = bookingRepository.findBookingsByBooker_IdAndStatusOrderByStartDesc(bookerId, Status.WAITING);
-            case "REJECTED" ->
-                    bookings = bookingRepository.findBookingsByBooker_IdAndStatusOrderByStartDesc(bookerId, Status.REJECTED);
-            default -> throw new StatusException(state);
+            case "ALL":
+                bookings = bookingRepository.findBookingsByBooker_IdOrderByStartDesc(bookerId, page);
+                break;
+            case "CURRENT":
+                bookings = bookingRepository.findBookingsByBooker_IdAndStartBeforeAndEndAfterOrderByStartAsc(bookerId, current, current, page);
+                break;
+            case "PAST":
+                bookings = bookingRepository.findBookingsByBooker_IdAndEndBeforeOrderByStartDesc(bookerId, current, page);
+                break;
+            case "FUTURE":
+                bookings = bookingRepository.findBookingsByBooker_IdAndStartAfterOrderByStartDesc(bookerId, current, page);
+                break;
+            case "WAITING":
+                bookings = bookingRepository.findBookingsByBooker_IdAndStatusOrderByStartDesc(bookerId, Status.WAITING, page);
+                break;
+            case "REJECTED":
+                bookings = bookingRepository.findBookingsByBooker_IdAndStatusOrderByStartDesc(bookerId, Status.REJECTED, page);
+                break;
+            default:
+                throw new StatusException(state);
         }
 
         return bookings.stream()
@@ -114,27 +129,40 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponse> getAllByOwner(Integer ownerId, String state) {
+    public List<BookingResponse> getAllByOwner(Integer ownerId, String state, Integer from, Integer size) {
         if (userRepository.findById(ownerId).isEmpty()) {
             throw new NotFoundException();
         }
 
-        List<Booking> bookings;
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        PageRequest page = PageRequest.of(from / size, size);
+        Page<Booking> bookings;
         LocalDateTime current = LocalDateTime.now();
 
         switch (state) {
-            case "ALL" -> bookings = bookingRepository.findBookingsByItemOwnerIdOrderByStartDesc(ownerId);
-            case "CURRENT" ->
-                    bookings = bookingRepository.findBookingsByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId, current, current);
-            case "PAST" ->
-                    bookings = bookingRepository.findBookingsByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, current);
-            case "FUTURE" ->
-                    bookings = bookingRepository.findBookingsByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId, current);
-            case "WAITING" ->
-                    bookings = bookingRepository.findBookingsByItemOwnerIdAndStatusOrderByStartDesc(ownerId, Status.WAITING);
-            case "REJECTED" ->
-                    bookings = bookingRepository.findBookingsByItemOwnerIdAndStatusOrderByStartDesc(ownerId, Status.REJECTED);
-            default -> throw new StatusException(state);
+            case "ALL":
+                bookings = bookingRepository.findBookingsByItemOwnerIdOrderByStartDesc(ownerId, page);
+                break;
+            case "CURRENT":
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId, current, current, page);
+                break;
+            case "PAST":
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, current, page);
+                break;
+            case "FUTURE":
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId, current, page);
+                break;
+            case "WAITING":
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndStatusOrderByStartDesc(ownerId, Status.WAITING, page);
+                break;
+            case "REJECTED":
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndStatusOrderByStartDesc(ownerId, Status.REJECTED, page);
+                break;
+            default:
+                throw new StatusException(state);
         }
 
         System.out.println(bookings);

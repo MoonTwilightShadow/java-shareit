@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item.utils;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.shareit.item.dto.CommentResponse;
-import ru.practicum.shareit.item.dto.CreateItemRequest;
-import ru.practicum.shareit.item.dto.ItemResponse;
-import ru.practicum.shareit.item.dto.ItemWithBookingResponse;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
@@ -49,6 +46,16 @@ public class ItemMapper {
                 comment.getText(),
                 comment.getAuthor().getName(),
                 comment.getCreated()
+        );
+    }
+
+    public ItemInfoForRequests mapToInfo(Item item) {
+        return new ItemInfoForRequests(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getRequest().getId(),
+                item.getAvailable()
         );
     }
 }

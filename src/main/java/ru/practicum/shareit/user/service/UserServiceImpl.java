@@ -11,7 +11,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.utils.UserMapper;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,13 +22,7 @@ public class UserServiceImpl implements UserService {
     public User getById(Integer id) {
         log.info("getById user method");
 
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isEmpty()) {
-            throw new NotFoundException();
-        }
-
-        return user.get();
+        return userRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
     @Override
@@ -55,20 +48,17 @@ public class UserServiceImpl implements UserService {
     public User update(UserRequest request, Integer id) {
         log.info("update user method");
 
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isEmpty()) {
-            throw new NotFoundException();
-        }
+        User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
 
         if (request.getEmail() != null) {
-                user.get().setEmail(request.getEmail());
+            user.setEmail(request.getEmail());
         }
 
         if (request.getName() != null) {
-            user.get().setName(request.getName());
+            user.setName(request.getName());
         }
-        return userRepository.save(user.get());
+
+        return userRepository.save(user);
     }
 
     @Override

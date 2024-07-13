@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-item-requests.
@@ -23,4 +24,10 @@ public class Request {
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
     private User requestor;
+    private LocalDateTime created;
+
+    public Request(String description) {
+        this.description = description;
+        this.created = LocalDateTime.now();
+    }
 }
